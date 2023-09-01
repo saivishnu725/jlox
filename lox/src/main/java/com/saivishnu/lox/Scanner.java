@@ -97,6 +97,9 @@ public class Scanner {
                 // increase line count. useful for showing line number in error messages.
                 line++;
                 break;
+            case '"':
+                string();
+                break;
             default:
                 Lox.error(line, "Unexpected token.");
                 break;
@@ -136,5 +139,25 @@ public class Scanner {
         if (isAtEnd())
             return '\0';
         return source.charAt(current);
+    }
+
+    private void string() {
+        while (peek() != '"' && !isAtEnd()) {
+            // allows multi-line strings, it increments the line number to account for that.
+            if (peek() == '\n')
+                line++;
+            advance();
+        }
+        if (isAtEnd()) {
+            Lox.error(line, "String not closed properly");
+            return;
+        }
+
+        // advance the closing "
+        advance();
+
+        // save value without the leading and trailing quote " "
+        String value = source.substring(start + 1, current - 1);
+        addToken(STRING, value);
     }
 }
