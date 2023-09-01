@@ -101,7 +101,11 @@ public class Scanner {
                 string();
                 break;
             default:
-                Lox.error(line, "Unexpected token.");
+                // if it is not any token or string then search for number or else error it out.
+                if (isDigit(c))
+                    number();
+                else
+                    Lox.error(line, "Unexpected token.");
                 break;
         }
     }
@@ -134,11 +138,19 @@ public class Scanner {
         return true;
     }
 
+    // peek ahead by 1 character relative to the current.
     private char peek() {
         // same as advance but wont increment the current position
         if (isAtEnd())
             return '\0';
         return source.charAt(current);
+    }
+
+    // peek ahead to the 2nd character from current
+    private char peekNext() {
+        if (current + 1 > source.length())
+            return '\0';
+        return source.charAt(current + 1);
     }
 
     private void string() {
@@ -159,5 +171,23 @@ public class Scanner {
         // save value without the leading and trailing quote " "
         String value = source.substring(start + 1, current - 1);
         addToken(STRING, value);
+    }
+
+    private boolean isDigit(char value) {
+        return value >= '0' && value <= '9';
+    }
+
+    private void number() {
+        while (!isDigit(peek())) {
+            advance();
+        }
+        // peek again using peekNext() to know if the . is used as floating point and not as 
+        if (peek() == '.' && isDigit(peekNext())) {
+            advance();
+            while (isDigit(peek()))
+                advance();
+        }
+        double value = Double.parseDouble(source.substring(start, current));
+        addToken(NUMBER, value);
     }
 }
