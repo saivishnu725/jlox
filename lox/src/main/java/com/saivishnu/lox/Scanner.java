@@ -63,6 +63,9 @@ public class Scanner {
             case '*':
                 addToken(STAR);
                 break;
+            // match because of logical operators.
+            // This will check for next character and then decide whether it is a special
+            // single char lexeme or two char.
             case '!':
                 addToken(match('=') ? BANG_EQUAL : BANG);
                 break;
@@ -75,6 +78,16 @@ public class Scanner {
             case '>':
                 addToken(match('=') ? GREATER_EQUAL : GREATER);
                 break;
+            // comments or division expression.
+            case '/':
+                if (match('/')) {
+                    // if it is a "//" then go until the end of the line
+                    // then ignore it without adding.
+                    while (peek() != '\n' && !isAtEnd())
+                        advance();
+                } else
+                    addToken(SLASH); // it is a division.
+                break;
             default:
                 Lox.error(line, "Unexpected token.");
                 break;
@@ -86,6 +99,7 @@ public class Scanner {
     }
 
     private char advance() {
+        // returns next character and increments the current position.
         return source.charAt(current++);
     }
 
@@ -106,5 +120,12 @@ public class Scanner {
 
         current++;
         return true;
+    }
+
+    private char peek() {
+        // same as advance but wont increment the current position
+        if (isAtEnd())
+            return '\0';
+        return source.charAt(current);
     }
 }
