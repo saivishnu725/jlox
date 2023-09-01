@@ -82,11 +82,20 @@ public class Scanner {
             case '/':
                 if (match('/')) {
                     // if it is a "//" then go until the end of the line
-                    // then ignore it without adding.
                     while (peek() != '\n' && !isAtEnd())
+                        // then ignore it without adding.
                         advance();
                 } else
                     addToken(SLASH); // it is a division.
+                break;
+            // ignore things like ' ', '\r' and '\t'
+            case ' ':
+            case '\r':
+            case '\t':
+                break;
+            case '\n':
+                // increase line count. useful for showing line number in error messages.
+                line++;
                 break;
             default:
                 Lox.error(line, "Unexpected token.");
