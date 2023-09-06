@@ -15,6 +15,26 @@ public class Scanner {
     private int line = 1;
     private final String source;
     private final List<Token> tokens = new ArrayList<>();
+    private static final Map<String, TokenType> keywords;
+    static {
+        keywords = new HashMap<>();
+        keywords.put("and", AND);
+        keywords.put("class", CLASS);
+        keywords.put("else", ELSE);
+        keywords.put("false", FALSE);
+        keywords.put("for", FOR);
+        keywords.put("fun", FUN);
+        keywords.put("if", IF);
+        keywords.put("nil", NIL);
+        keywords.put("or", OR);
+        keywords.put("print", PRINT);
+        keywords.put("return", RETURN);
+        keywords.put("super", SUPER);
+        keywords.put("this", THIS);
+        keywords.put("true", TRUE);
+        keywords.put("var", VAR);
+        keywords.put("while", WHILE);
+    }
 
     Scanner(String source) {
         this.source = source;
@@ -104,10 +124,25 @@ public class Scanner {
                 // if it is not any token or string then search for number or else error it out.
                 if (isDigit(c))
                     number();
+                else if (isAlphaNumeric(c))
+                    identifier();
                 else
                     Lox.error(line, "Unexpected token.");
                 break;
         }
+    }
+
+    private void identifier() {
+        // keep advancing until end of the word / identifier
+        while (isAlphaNumeric(peek()))
+            advance();
+        // check if it is a keyword or an identifier and add respectively
+        String word = source.substring(start, current);
+        TokenType type = keywords.get(word);
+        if (type == null)
+            type = IDENTIFIER;
+        // add the type as a token
+        addToken(type); // it is either one of the keywords or IDENTIFIER
     }
 
     private boolean isAtEnd() {
@@ -153,6 +188,16 @@ public class Scanner {
         return source.charAt(current + 1);
     }
 
+    private boolean isAlpha(char c) {
+        return (c >= 'a' && c <= 'z') ||
+                (c >= 'A' && c <= 'Z') ||
+                c == '_';
+    }
+
+    private boolean isAlphaNumeric(char c) {
+        return isAlpha(c) || isDigit(c);
+    }
+
     private void string() {
         while (peek() != '"' && !isAtEnd()) {
             // allows multi-line strings, it increments the line number to account for that.
@@ -181,7 +226,8 @@ public class Scanner {
         while (!isDigit(peek())) {
             advance();
         }
-        // peek again using peekNext() to know if the . is used as floating point and not as 
+        // peek again using peekNext() to know if the . is used as floating point and
+        // not as
         if (peek() == '.' && isDigit(peekNext())) {
             advance();
             while (isDigit(peek()))
