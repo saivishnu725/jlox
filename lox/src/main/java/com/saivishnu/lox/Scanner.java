@@ -1,4 +1,3 @@
-// TODO: comments everywhere
 package com.saivishnu.lox;
 
 import java.util.ArrayList;
@@ -8,7 +7,7 @@ import java.util.Map;
 
 import static com.saivishnu.lox.TokenType.*;
 
-public class Scanner {
+class Scanner {
 
     private int start = 0;
     private int current = 0;
@@ -198,6 +197,10 @@ public class Scanner {
         return isAlpha(c) || isDigit(c);
     }
 
+    private boolean isDigit(char value) {
+        return value >= '0' && value <= '9';
+    }
+
     private void string() {
         while (peek() != '"' && !isAtEnd()) {
             // allows multi-line strings, it increments the line number to account for that.
@@ -218,14 +221,11 @@ public class Scanner {
         addToken(STRING, value);
     }
 
-    private boolean isDigit(char value) {
-        return value >= '0' && value <= '9';
-    }
-
     private void number() {
-        while (!isDigit(peek())) {
+
+        while (isDigit(peek()))
             advance();
-        }
+
         // peek again using peekNext() to know if the . is used as floating point and
         // not as
         if (peek() == '.' && isDigit(peekNext())) {
@@ -233,7 +233,8 @@ public class Scanner {
             while (isDigit(peek()))
                 advance();
         }
-        double value = Double.parseDouble(source.substring(start, current));
-        addToken(NUMBER, value);
+
+        addToken(NUMBER,
+                Double.parseDouble(source.substring(start, current)));
     }
 }
