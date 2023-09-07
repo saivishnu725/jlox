@@ -34,7 +34,7 @@ public class Lox {
         while (true) {
             System.out.print("> ");
             String line = reader.readLine();
-            if (line == null)
+            if (line == null || line.equals("exitConsole"))
                 break;
             run(line);
             hadError = false;
