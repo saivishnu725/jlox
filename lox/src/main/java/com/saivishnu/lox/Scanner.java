@@ -104,7 +104,14 @@ class Scanner {
                     while (peek() != '\n' && !isAtEnd())
                         // then ignore it without adding.
                         advance();
-                } else
+                }
+                // } else if (match('*')) {
+                // while ((peek() != '*' && peekNext() != '/') && !isAtEnd())
+                // advance();
+                // if (isAtEnd())
+                // Lox.error(line, "End of file before end of comment");
+                // }
+                else
                     addToken(SLASH); // it is a division.
                 break;
             // ignore things like ' ', '\r' and '\t'
