@@ -11,5 +11,31 @@ abstract class Expr {
         final Expr left;
         final Token operator;
         final Expr right;
-    
+    }
+
+    static class Unary extends Expr {
+        Unary(Token operator, Expr right) {
+            this.operator = operator;
+            this.right = right;
+        }
+
+        final Token operator;
+        final Expr right;
+    }
+
+    static class Literal extends Expr {
+        Literal(Object value) {
+            this.value = value;
+        }
+
+        final Object value;
+    }
+
+    static class Grouping extends Expr {
+        Grouping(Expr expression) {
+            this.expression = expression;
+        }
+
+        final Expr expression;
+    }
 }
