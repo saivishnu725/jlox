@@ -31,15 +31,31 @@ public class GenerateAst {
         writer.println("import java.util.List;\n");
         writer.println("abstract class " + baseName + " {");
 
+        defineVisitor(writer, baseName, types);
+
         for (String type : types) {
             String className = type.split(":")[0].trim();
             String fields = type.split(":")[1].trim();
             defineType(writer, baseName, className, fields);
         }
 
+        writer.println("\n\tabstract <R> R accept(Visitor<R> visitor);");
+
         // end of file
         writer.println("}");
         writer.close();
+    }
+
+    // implementation of Visitor interface (it is a Design Pattern)
+    private static void defineVisitor(PrintWriter writer, String baseName, List<String> types) {
+        writer.println("\tinterface Visitor<R> {");
+
+        for (String type : types) {
+            String typeName = type.split(":")[0].trim();
+            writer.println("\t\tR visit" + typeName + baseName + "(" + typeName + " " + baseName.toLowerCase() + ");");
+        }
+
+        writer.println("\t}");
     }
 
     private static void defineType(PrintWriter writer, String baseName, String className, String fieldList) {
@@ -55,6 +71,11 @@ public class GenerateAst {
             writer.println("\t\t\tthis." + name + " = " + name + ";");
         }
         writer.println("\t\t}\n");
+
+        writer.println("\t\t@Override");
+        writer.println("\t\t<R> R accept(Visitor<R> visitor) {");
+        writer.println("\t\t\treturn visitor.visit" + className + baseName + "(this);");
+        writer.println("\t\t}");
 
         // create fields
         for (String field : fields)
