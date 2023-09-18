@@ -48,6 +48,7 @@ public class AstPrinter implements Expr.Visitor<String> {
                         new Expr.Literal(123)),
                 new Token(TokenType.STAR, "*", null, 1),
                 new Expr.Grouping(new Expr.Literal(420.69)));
+                // new Expr.Literal(420.69));
 
         System.out.println(new AstPrinter().print(expression));
     }
