@@ -107,7 +107,7 @@ public class Parser {
         return previous();
     }
 
-    private Token isAtEnd() {
+    private boolean isAtEnd() {
         return peek().type == EOF;
     }
 
