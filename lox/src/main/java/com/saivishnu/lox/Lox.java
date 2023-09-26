@@ -12,15 +12,17 @@ public class Lox {
     static boolean hadError = false;
 
     public static void main(String[] args) throws IOException {
+        // check if there there than more than one input file
         if (args.length > 1) {
             System.out.println("Usage: jlox [script]");
             System.exit(64);
-        } else if (args.length == 1)
+        } else if (args.length == 1) // if only one file is sent, parse it
             runFile(args[0]);
         else
-            runPrompt();
+            runPrompt(); // if not, open a interactive prompt
     }
 
+    // read the file and run it
     private static void runFile(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
@@ -28,6 +30,7 @@ public class Lox {
             System.exit(65);
     }
 
+    // open a interactive prompt
     private static void runPrompt() throws IOException {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(input);
@@ -41,6 +44,7 @@ public class Lox {
         }
     }
 
+    // run the source code
     private static void run(String source) {
         Scanner sc = new Scanner(source);
         List<Token> tokens = sc.scanTokens();
@@ -49,10 +53,12 @@ public class Lox {
             System.out.println(token);
     }
 
+    // error handling for individual lines
     static void error(int line, String message) {
         report(line, "", message);
     }
 
+    // error handling with line number and where the error is
     static void report(int line, String where, String message) {
         System.err.println("[line " + line + "] Error " + where + ": " + message);
         hadError = true;
