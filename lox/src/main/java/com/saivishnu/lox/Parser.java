@@ -114,6 +114,8 @@ public class Parser {
         if(match(NUMBER, STRING)) return new Expr.Literal(previous().literal);
 
         if(match(LEFT_PAREN) {
+            // create another expression inside the (here),
+            // then check if it is a ")" and give an error if it isn't.
             Expr expr = expression();
             consume(RIGHT_PAREN, "Expect ')' after expression.");
             return new Expr.Grouping(expr);
@@ -129,6 +131,14 @@ public class Parser {
             }
         }
         return false;
+    }
+
+    // perform a check and send a error if it isn't
+    private Token consume(TokenType type, String message) {
+        if (check(type))
+            return advance();
+
+        throw error(peek(), message);
     }
 
     // gets current and checks with expected one
