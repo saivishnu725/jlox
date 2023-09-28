@@ -35,10 +35,13 @@ class Interpreter implements Expr.Visitor<Object> {
     }
 
     private boolean isTruthy(Object object) {
+        // everything that is a not a null or bool false is true. 
         if (object == null)
             return false;
+            // if it is a boolean, just convert it from object to bool and return
         if (object instanceof Boolean)
             return (boolean) object;
+        // anything else is true
         return true;
     }
 }
