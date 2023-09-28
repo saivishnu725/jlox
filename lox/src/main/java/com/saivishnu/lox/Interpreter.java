@@ -103,7 +103,7 @@ class Interpreter implements Expr.Visitor<Object> {
                     return (double) left + (double) right;
                 if (left instanceof String && right instanceof String)
                     return (String) left + (String) right;
-                return null;
+                throw new RuntimeError(expr.operator, "Operands must be 2 numbers or 2 strings.");
             case SLASH:
                 return (double) left / (double) right;
             case STAR:
