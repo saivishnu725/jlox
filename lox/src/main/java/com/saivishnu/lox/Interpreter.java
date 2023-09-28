@@ -128,4 +128,36 @@ class Interpreter implements Expr.Visitor<Object> {
         // if both are not null then compare
         return a.equals(b);
     }
+
+    /*
+     * fn() which is called by the Lox class
+     * is responsible for evaluating the expression
+     * if it runs into RuntimeError then it will be caught
+     * or else convert the the output to string anf print it to the screen
+     */
+    void interpret(Expr expression) {
+        try {
+            Object value = evaluate(expression);
+            System.out.println(stringify(value));
+        } catch (RuntimeError error) {
+            Lox.runtimeError(error);
+        }
+    }
+
+    // convert output to string
+    private String stringify(Object object) {
+        // if it is null then return 'nil' because Lox prefers nil over null
+        if (object == null)
+            return "nil";
+        // check for number
+        if (object instanceof Double) {
+            String text = object.toString();
+            // if it is a int with no decimal value, yeet the redundant .0
+            if (text.endsWith(".0"))
+                text = text.substring(0, text.length() - 2);
+            return text;
+        }
+        // convert the rest to string and return it
+        return object.toString();
+    }
 }
