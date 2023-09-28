@@ -7,7 +7,8 @@ import static com.saivishnu.lox.TokenType.*;
 public class Parser {
 
     // parser related error handling class
-    private static class ParseError extends RuntimeException {}
+    private static class ParseError extends RuntimeException {
+    }
 
     private final List<Token> tokens;
     private int current = 0;
@@ -117,13 +118,16 @@ public class Parser {
 
         if(match(NUMBER, STRING)) return new Expr.Literal(previous().literal);
 
-        if(match(LEFT_PAREN) {
+        if(match(LEFT_PAREN)) {
             // create another expression inside the (here),
             // then check if it is a ")" and give an error if it isn't.
             Expr expr = expression();
             consume(RIGHT_PAREN, "Expect ')' after expression.");
             return new Expr.Grouping(expr);
         }
+
+        // if none of the above primary or grouping, throw an error
+        throw error(peek(), "Expect expression.");
     }
 
     // used to check if the operator is same as expected
@@ -180,5 +184,31 @@ public class Parser {
         return new ParseError();
     }
 
-    
+    /*
+     * if an error was found then peek until next statement
+     * to reduce the number of errors (cascaded errors)
+     */
+    private void synchronize() {
+        // go to next token
+        advance();
+
+        while (!isAtEnd()) {
+            // if it is at the end of tokens, stop skipping
+            if (previous().type == SEMICOLON)
+                return;
+            switch (peek().type) {
+                case CLASS:
+                case FUN:
+                case VAR:
+                case FOR:
+                case IF:
+                case WHILE:
+                case PRINT:
+                case RETURN:
+                    // if it is the next statement, stop skipping
+                    return;
+            }
+        }
+    }
+
 }
