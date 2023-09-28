@@ -1,8 +1,10 @@
 package com.saivishnu.lox;
 
 /**
- * The Interpreter class implements the Expr.Visitor interface and is responsible for evaluating expressions.
- * It contains methods to evaluate literal, grouping, unary and binary expressions.
+ * The Interpreter class implements the Expr.Visitor interface and is
+ * responsible for evaluating expressions.
+ * It contains methods to evaluate literal, grouping, unary and binary
+ * expressions.
  */
 class Interpreter implements Expr.Visitor<Object> {
 
@@ -32,10 +34,20 @@ class Interpreter implements Expr.Visitor<Object> {
                 // if the right is truthy, return false, else return true
                 return !isTruthy(right);
             case MINUS:
+                // check if right is a number or not
+                checkNumberOperand(expr.operator, right);
                 // negate the value by converting it to a double
                 return -(double) right;
         }
         return null;
+    }
+
+    private void checkNumberOperand(Token operator, Object operand) {
+        // if it is a number, then return nothing
+        if (operand instanceof Double)
+            return;
+        // else throw a runtime error
+        throw new RuntimeError(operator, "Operand must be a number.");
     }
 
     private boolean isTruthy(Object object) {
