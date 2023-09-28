@@ -5,6 +5,10 @@ import java.util.List;
 import static com.saivishnu.lox.TokenType.*;
 
 public class Parser {
+
+    // parser related error handling class
+    private static class ParseError extends RuntimeException {}
+
     private final List<Token> tokens;
     private int current = 0;
 
@@ -169,4 +173,12 @@ public class Parser {
     private Token previous() {
         return tokens.get(current - 1);
     }
+
+    // error handling
+    private ParseError error(Token token, String message) {
+        Lox.error(token, message);
+        return new ParseError();
+    }
+
+    
 }
