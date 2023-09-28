@@ -63,9 +63,15 @@ public class Lox {
         Scanner sc = new Scanner(source);
         List<Token> tokens = sc.scanTokens();
 
+        // two sample code to either print all the token or the syntax tree
+        // METHOD 1:
         // print the tokens
         // for (Token token : tokens)
         // System.out.println(token);
+
+        // METHOD 2:
+        // print the expression using AstPrinter
+        // System.out.println(new AstPrinter().print(expression));
 
         // parse the tokens
         Parser parser = new Parser(tokens);
@@ -77,9 +83,6 @@ public class Lox {
 
         // call the interpreter to interpret the expression
         interpreter.interpret(expression);
-
-        // print the expression using AstPrinter
-        System.out.println(new AstPrinter().print(expression));
     }
 
     // error handling for individual lines
