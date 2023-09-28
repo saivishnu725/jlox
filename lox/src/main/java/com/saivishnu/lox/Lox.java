@@ -9,7 +9,12 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Lox {
+    // interpreter object
+    private static final Interpreter interpreter = new Interpreter();
+    // syntax error flag
     static boolean hadError = false;
+    // runtime error flag
+    static boolean hadRuntimeError = false;
 
     public static void main(String[] args) throws IOException {
         // check if there there than more than one input file
@@ -26,8 +31,12 @@ public class Lox {
     private static void runFile(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
+        // syntax error in file
         if (hadError)
             System.exit(65);
+        // runtime error in file
+        if (hadRuntimeError)
+            System.exit(70);
     }
 
     // open a interactive prompt
@@ -37,10 +46,15 @@ public class Lox {
         while (true) {
             System.out.print("> ");
             String line = reader.readLine();
-            if (line == null || line.equals("exitConsole"))
+            // a way to come out of the interactive prompt
+            if (line == null || line.equals("exit()"))
                 break;
             run(line);
             hadError = false;
+            /*
+             * nothing is done about the runtime error
+             * as we do not want to stop interactive prompt for a runtime error.
+             */
         }
     }
 
@@ -53,12 +67,16 @@ public class Lox {
         // for (Token token : tokens)
         // System.out.println(token);
 
+        // parse the tokens
         Parser parser = new Parser(tokens);
         Expr expression = parser.parse();
 
         // if there was a syntax error, stop execution
         if (hadError)
             return;
+
+        // call the interpreter to interpret the expression
+        interpreter.interpret(expression);
 
         // print the expression using AstPrinter
         System.out.println(new AstPrinter().print(expression));
@@ -81,5 +99,11 @@ public class Lox {
             report(token.line, " at end", message);
         else
             report(token.line, " at '" + token.lexeme + "'", message);
+    }
+
+    // error handling for runtime errors
+    static void runtimeError(RuntimeError error) {
+        System.err.println(error.getMessage() + "\n[line " + error.token.line + "]");
+        hadRuntimeError = true;
     }
 }
