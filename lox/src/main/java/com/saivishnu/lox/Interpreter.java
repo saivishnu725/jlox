@@ -38,15 +38,26 @@ class Interpreter implements Expr.Visitor<Object> {
                 checkNumberOperand(expr.operator, right);
                 // negate the value by converting it to a double
                 return -(double) right;
+            default:
+                break;
         }
         return null;
     }
 
+    // check if one operand is a number or not
     private void checkNumberOperand(Token operator, Object operand) {
         // if it is a number, then return nothing
         if (operand instanceof Double)
             return;
         // else throw a runtime error
+        throw new RuntimeError(operator, "Operand must be a number.");
+    }
+
+    // check if both left and right are a number or not
+    private void checkNumberOperands(Token operator, Object left, Object right) {
+        // if both are numbers, then return nothing
+        if (left instanceof Number && right instanceof Number)
+            return;
         throw new RuntimeError(operator, "Operand must be a number.");
     }
 
@@ -73,20 +84,26 @@ class Interpreter implements Expr.Visitor<Object> {
          */
         switch (expr.operator.type) {
             case GREATER:
+                checkNumberOperands(expr.operator, left, right);
                 return (double) left > (double) right;
             case GREATER_EQUAL:
+                checkNumberOperands(expr.operator, left, right);
                 return (double) left >= (double) right;
             case LESS:
+                checkNumberOperands(expr.operator, left, right);
                 return (double) left < (double) right;
             case LESS_EQUAL:
+                checkNumberOperands(expr.operator, left, right);
                 return (double) left <= (double) right;
             case MINUS:
+                checkNumberOperands(expr.operator, left, right);
                 return (double) left - (double) right;
             case PLUS:
                 if (left instanceof Double && right instanceof Double)
                     return (double) left + (double) right;
                 if (left instanceof String && right instanceof String)
                     return (String) left + (String) right;
+                return null;
             case SLASH:
                 return (double) left / (double) right;
             case STAR:
@@ -95,6 +112,8 @@ class Interpreter implements Expr.Visitor<Object> {
                 return !isEqual(left, right);
             case EQUAL_EQUAL:
                 return isEqual(left, right);
+            default:
+                break;
         }
         return null;
     }
