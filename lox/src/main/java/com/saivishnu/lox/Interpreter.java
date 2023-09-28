@@ -1,5 +1,9 @@
 package com.saivishnu.lox;
 
+/**
+ * The Interpreter class implements the Expr.Visitor interface and is responsible for evaluating expressions.
+ * It contains methods to evaluate literal, grouping, unary and binary expressions.
+ */
 class Interpreter implements Expr.Visitor<Object> {
 
     @Override
@@ -35,13 +39,62 @@ class Interpreter implements Expr.Visitor<Object> {
     }
 
     private boolean isTruthy(Object object) {
-        // everything that is a not a null or bool false is true. 
+        // everything that is a not a null or bool false is true.
         if (object == null)
             return false;
-            // if it is a boolean, just convert it from object to bool and return
+        // if it is a boolean, just convert it from object to bool and return
         if (object instanceof Boolean)
             return (boolean) object;
         // anything else is true
         return true;
+    }
+
+    public Object visitBinaryExpr(Expr.Binary expr) {
+        Object left = evaluate(expr.left);
+        Object right = evaluate(expr.right);
+
+        /*
+         * comparison >, >=, <, <=
+         * arithmetic -, + (num, str), /, *
+         * not-equals or equals comparison !=, ==
+         * in the same order to preserve precedence
+         */
+        switch (expr.operator.type) {
+            case GREATER:
+                return (double) left > (double) right;
+            case GREATER_EQUAL:
+                return (double) left >= (double) right;
+            case LESS:
+                return (double) left < (double) right;
+            case LESS_EQUAL:
+                return (double) left <= (double) right;
+            case MINUS:
+                return (double) left - (double) right;
+            case PLUS:
+                if (left instanceof Double && right instanceof Double)
+                    return (double) left + (double) right;
+                if (left instanceof String && right instanceof String)
+                    return (String) left + (String) right;
+            case SLASH:
+                return (double) left / (double) right;
+            case STAR:
+                return (double) left * (double) right;
+            case BANG_EQUAL:
+                return !isEqual(left, right);
+            case EQUAL_EQUAL:
+                return isEqual(left, right);
+        }
+        return null;
+    }
+
+    private boolean isEqual(Object a, Object b) {
+        // if both are null, then return true
+        if (a == null && b == null)
+            return true;
+        if (a == null)
+            return false;
+
+        // if both are not null then compare
+        return a.equals(b);
     }
 }
