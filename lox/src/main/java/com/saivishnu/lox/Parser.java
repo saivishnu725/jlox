@@ -1,5 +1,6 @@
 package com.saivishnu.lox;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.saivishnu.lox.TokenType.*;
@@ -17,13 +18,33 @@ public class Parser {
         this.tokens = tokens;
     }
 
+    /*
+     * // initial method to start the parser
+     * public Expr parse() {
+     * initial code used to parse the expression.
+     * replaced with a expression + statement parser call below
+     * try {
+     * return expression();
+     * } catch (ParseError error) {
+     * return null;
+     * }
+     * }
+     */
+
     // initial method to start the parser
-    public Expr parse() {
-        try {
-            return expression();
-        } catch (ParseError error) {
-            return null;
+    List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
+        while (!isAtEnd()) {
+            statements.add(statement());
         }
+        return statements;
+    }
+
+    // check which statement is being passed and call the respective
+    private Stmt statement() {
+        if (match(PRINT))
+            return printStatement();
+        return expressionStatement();
     }
 
     /*
