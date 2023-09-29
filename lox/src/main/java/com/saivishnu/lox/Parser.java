@@ -47,6 +47,20 @@ public class Parser {
         return expressionStatement();
     }
 
+    // print method
+    private Stmt printStatement() {
+        Expr value = expression();
+        consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    // expression method
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
+    }
+
     /*
      * it follows the precedency rule.
      * equality
