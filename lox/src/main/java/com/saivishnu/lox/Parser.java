@@ -255,6 +255,8 @@ public class Parser {
                 case RETURN:
                     // if it is the next statement, stop skipping
                     return;
+                default:
+                    advance();
             }
         }
     }
