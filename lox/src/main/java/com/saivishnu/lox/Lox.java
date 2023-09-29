@@ -75,14 +75,14 @@ public class Lox {
 
         // parse the tokens
         Parser parser = new Parser(tokens);
-        Expr expression = parser.parse();
+        List<Stmt> statement = parser.parse();
 
         // if there was a syntax error, stop execution
         if (hadError)
             return;
 
         // call the interpreter to interpret the expression
-        interpreter.interpret(expression);
+        interpreter.interpret(statement);
     }
 
     // error handling for individual lines
