@@ -1,7 +1,5 @@
 package com.saivishnu.lox;
 
-import java.util.List;
-
 abstract class Expr {
 	interface Visitor<R> {
 		R visitBinaryExpr(Binary expr);
