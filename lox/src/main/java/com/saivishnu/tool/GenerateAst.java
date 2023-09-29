@@ -1,5 +1,6 @@
 package com.saivishnu.tool;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -17,22 +18,28 @@ public class GenerateAst {
                 "Binary : Expr left, Token operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal: Object value",
-                "Unary : Token operator, Expr right");
+                "Unary : Token operator, Expr right",
+                "Variable : Token name");
         // pass this description to the function to create the Expr class
         defineAst(outputDir, "Expr", description);
         // generate statement and expression class
         defineAst(outputDir, "Stmt", Arrays.asList(
                 "Expression : Expr expression",
-                "Print : Expr expression"));
+                "Print : Expr expression",
+                "Var : Token name, Expr initializer"));
     }
 
     private static void defineAst(String outputDir, String baseName, List<String> types) throws IOException {
-        String path = outputDir + "/" + baseName + ".java";
+        String path = outputDir + File.separator + baseName + ".java";
         PrintWriter writer = new PrintWriter(path, "UTF-8");
 
         // start of file
         writer.println("package com.saivishnu.lox;\n");
-        writer.println("import java.util.List;\n");
+        /**
+         * Haven't used it until now but the book has it.
+         * So, I will comment it for now
+         * writer.println("import java.util.List;\n");
+         */
         writer.println("abstract class " + baseName + " {");
 
         defineVisitor(writer, baseName, types);
