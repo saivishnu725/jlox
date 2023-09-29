@@ -1,12 +1,14 @@
 package com.saivishnu.lox;
 
+import java.util.List;
+
 /**
  * The Interpreter class implements the Expr.Visitor interface and is
  * responsible for evaluating expressions.
  * It contains methods to evaluate literal, grouping, unary and binary
  * expressions.
  */
-class Interpreter implements Expr.Visitor<Object> {
+class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitLiteralExpr(Expr.Literal expr) {
@@ -24,6 +26,21 @@ class Interpreter implements Expr.Visitor<Object> {
     private Object evaluate(Expr expr) {
         // call the visitor again to evaluate the inside expression
         return expr.accept(this);
+    }
+
+    // expression statement visitor
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt) {
+        evaluate(stmt.expression);
+        return null;
+    }
+
+    // print statement visitor
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt) {
+        Object value = evaluate(stmt.expression);
+        System.out.println(stringify(value));
+        return null;
     }
 
     @Override
@@ -135,13 +152,25 @@ class Interpreter implements Expr.Visitor<Object> {
      * if it runs into RuntimeError then it will be caught
      * or else convert the the output to string anf print it to the screen
      */
-    void interpret(Expr expression) {
+    void interpret(List<Stmt> statements) {
         try {
-            Object value = evaluate(expression);
-            System.out.println(stringify(value));
+            /*
+             * // evaluate the expression and print it
+             * Object value = evaluate(expression);
+             * System.out.println(stringify(value));
+             * // replaced with a statement call which decides if it is a stmt or expr
+             */
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
         } catch (RuntimeError error) {
             Lox.runtimeError(error);
         }
+    }
+
+    // helper method to execute the statement
+    private void execute(Stmt statement) {
+        statement.accept(this);
     }
 
     // convert output to string
